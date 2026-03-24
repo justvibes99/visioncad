@@ -121,11 +121,24 @@ def generate_model(image_paths, description, output_dir):
     print("Analysis complete.")
 
     # Pass 2: Generate FreeCAD script from the analysis
-    codegen_prompt = f"Generate the FreeCAD Python script for this furniture piece.\n\nDESIGN ANALYSIS:\n{analysis}"
+    codegen_prompt = f"Generate the FreeCAD Python script for this furniture piece. Return ONLY the Python code wrapped in ```python ... ```. No prose, no summaries.\n\nDESIGN ANALYSIS:\n{analysis}"
 
-    print("Generating FreeCAD script...")
-    response = run_claude(codegen_prompt, system_prompt_file=CODEGEN_PROMPT_FILE)
-    script = extract_python(response)
+    MAX_CODEGEN_ATTEMPTS = 2
+    script = None
+    for attempt in range(1, MAX_CODEGEN_ATTEMPTS + 1):
+        if attempt > 1:
+            print(f"Retrying code generation (attempt {attempt})...")
+        print("Generating FreeCAD script...")
+        response = run_claude(codegen_prompt, system_prompt_file=CODEGEN_PROMPT_FILE)
+        extracted = extract_python(response)
+        if "import FreeCAD" in extracted or "Part.makeBox" in extracted:
+            script = extracted
+            break
+        print("Warning: Claude did not return valid Python code.")
+
+    if not script:
+        print("Error: Failed to generate a valid FreeCAD script after retries.", file=sys.stderr)
+        sys.exit(1)
     script = script.replace("__OUTPUT_FCSTD__", output_fcstd)
     script = script.replace("__OUTPUT_STEP__", output_step)
 
