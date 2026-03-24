@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3:*)",
+      "Bash(python:*)",
+      "Bash(pip:*)",
+      "Bash(pip3:*)",
+      "Bash(git:*)",
+      "Bash(gh:*)",
+      "Bash(open:*)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(chmod:*)",
+      "Bash(freecadcmd:*)",
+      "Bash(claude:*)",
+      "Read",
+      "Edit",
+      "Write"
+    ],
+    "deny": [
+      "Bash(rm -rf:*)",
+      "Bash(git push --force:*)",
+      "Bash(git reset --hard:*)"
+    ]
+  }
+}
